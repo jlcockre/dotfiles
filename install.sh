@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sudo apt-get install zsh i3 git
+
 function install {
     # TODO: Offer to replace symbolic link
     if [ -h $2 ]
@@ -18,16 +20,9 @@ function install {
     ln -s $PWD/$1 $2
 }
 
-install "ssh_config" "${HOME}/.ssh/config"
-install "bash_config" "${HOME}/.bash_config"
 install "vimrc" "${HOME}/.vimrc"
 install "gitconfig" "${HOME}/.gitconfig"
-install "pentadactylrc" "${HOME}/.pentadactylrc"
 install "zshrc" "${HOME}/.zshrc"
-
-#install "awesome" "${HOME}/.config"
-#install "awesome.session" "/usr/share/gnome-session/sessions/awesome.session"
-#install "gnome-awesome.desktop" "/usr/share/xsessions/gnome-awesome.desktop"
 
 install "i3/config" "${HOME}/.i3/config"
 install "i3/i3status.conf" "${HOME}/.i3status.conf"
@@ -36,7 +31,7 @@ sudo install "i3/i3-gnome.desktop" "/usr/share/xsessions/"
 sudo install "i3/i3.desktop" "/usr/share/applications/"
 
 # Disable gnome desktop
-gsettings set org.gnome.desktop.background show-desktop-icons false
+#gsettings set org.gnome.desktop.background show-desktop-icons false
 
 # Install vundle if necessary
 if [ ! -e ${HOME}/.vim/bundle/vundle ]
@@ -52,6 +47,5 @@ then
     git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
 fi
 
-echo
-echo "To complete the install, run the following command, if necessary:"
-echo "echo \". ~/.bash_config\" >> ~/.bashrc"
+# Switch to zsh
+chsh -s /usr/bin/zsh

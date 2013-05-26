@@ -7,10 +7,6 @@
 " 2) Move this file to your home directory
 " 3) Launch vim and run :BundleInstall
 "
-" TODO: Text object representing entire file
-" Then I can get rid of _ commands.
-"
-" TODO: Spaces after , around = + -...
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                                 Plugins                                 "
@@ -34,19 +30,22 @@ let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 " Editing commands
 Bundle 'repeat.vim'
 Bundle 'tpope/vim-surround'
-Bundle 'scrooloose/nerdcommenter'
+Bundle 'scooloose/nerdcommenter'
 Bundle 'wojtekmach/vim-rename'
 "Bundle 'SirVer/ultisnips'
-Bundle 'mattn/zencoding-vim'
+"Bundle 'mattn/zencoding-vim'
+Bundle 'godlygeek/tabular'
+
+" Supertab
+Bundle 'ervandew/supertab'
 
 " Management
 Bundle 'sessionman.vim'
 Bundle 'bufexplorer.zip'
 
 " External Integration
-Bundle 'tpope/vim-fugitive'
+" Bundle 'tpope/vim-fugitive'
 Bundle 'scrooloose/syntastic'
-Bundle 'sjl/clam.vim'
 " Fast searching
 Bundle 'rking/ag.vim'
 " Just incase Ag is not installed
@@ -70,15 +69,15 @@ Bundle 'sophacles/vim-bundle-mako'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! Preserve(command)
-  " Preparation: save last search, and cursor position.
-  let _s=@/
-  let l = line(".")
-  let c = col(".")
-  " Do the business:
-  execute a:command
-  " Clean up: restore previous search history, and cursor position
-  let @/=_s
-  call cursor(l, c)
+    " Preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+    " Do the business:
+    execute a:command
+    " Clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
 
 endfunction
 
@@ -89,19 +88,15 @@ endfunction
 """"""""""""""""
 "  Appearance  "
 """"""""""""""""
+" Force gnome-terminal to display colorscheme correctly
 if &term =~ '^\(xterm\|screen\)$' && $COLORTERM == 'gnome-terminal'
     set t_Co=256
 endif
-"set background=dark
-"colorscheme ir_black
 "colorscheme badwolf
-" Fix wildmenu colors
-"hi WildMenu gui=italic guibg=#202020 guifg=yellow
-" Force gnome-terminal to display colorscheme correctly
 
 " No extra gui crap
 set guioptions-=m
-set guioptions-=T
+"set guioptions-=T
 set guioptions-=e
 
 " Nice autocomplete bar
@@ -129,29 +124,6 @@ set so=7
 " Put name of current file in titlebar
 set title
 
-" Capitalization
-if (&tildeop)
-  nmap gcw guw~l
-  nmap gcW guW~l
-  nmap gciw guiw~l
-  nmap gciW guiW~l
-  nmap gcis guis~l
-  nmap gc$ gu$~l
-  nmap gcgc guu~l
-  nmap gcc guu~l
-  vmap gc gu~l
-else
-  nmap gcw guw~h
-  nmap gcW guW~h
-  nmap gciw guiw~h
-  nmap gciW guiW~h
-  nmap gcis guis~h
-  nmap gc$ gu$~h
-  nmap gcgc guu~h
-  nmap gcc guu~h
-  vmap gc gu~h
-endif
-
 " Ctags
 set tags=tags;
 
@@ -169,10 +141,6 @@ set ts=4 sts=4 sw=4 expandtab shiftround
 
 " Indenting
 set ai "Auto indent
-"set si "Smart indent
-" Smart indent breaks python indenting,
-" use language specific indenting instead
-set nosmartindent
 
 " Soft wrap
 set linebreak
@@ -227,27 +195,6 @@ set noswapfile
 "                              Key Bindings                               "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Run python
-noremap <silent> - :w<cr> :!python ./learn.py<cr>
-
-" Too lazy to hold shift
-noremap ; :
-noremap : ;
-
-" Save the Esc key
-inoremap  jk     <Esc>
-cnoremap  jk     <C-c>
-vnoremap  jk     <ESC>
-"inoremap  <esc>  <nop>
-"vnoremap  <esc>  <nop>
-"cnoremap  <esc>  <nop>
-
-" Messing around
-" noremap h <nop>
-" noremap j <nop>
-" noremap k <nop>
-" noremap l <nop>
-
 " Tab navigation
 noremap <S-H> gT
 noremap <S-L> gt
@@ -259,11 +206,22 @@ noremap <C-j> <C-W>j
 noremap <C-k> <C-W>k
 noremap <C-h> <C-W>h
 noremap <C-l> <C-W>l
+
+noremap <C-Down>   <C-W>j
+noremap <C-Up>     <C-W>k
+noremap <C-Left>   <C-W>h
+noremap <C-Right>  <C-W>l
+
 " Move windows with alt
 noremap <A-j> <C-W>J
 noremap <A-k> <C-W>K
 noremap <A-h> <C-W>H
 noremap <A-l> <C-W>L
+
+noremap <A-Down>   <C-W>J
+noremap <A-Up>     <C-W>K
+noremap <A-Left>   <C-W>H
+noremap <A-Right>  <C-W>L
 
 " Make Y behave like everyone else
 nnoremap Y y$
@@ -277,10 +235,8 @@ inoremap <C-f> <C-x><C-f>
 inoremap <C-d> <C-x><C-d>
 " Line
 inoremap <C-l> <C-x><C-l>
-" Dictionary
-" inoremap <C-k> <C-x><C-k>
 
-" Adjust viewports to the same size
+" Adjust view ports to the same size
 noremap <leader>= <C-w>=
 
 " For when you forget to sudo.. Really Write the file.
@@ -288,6 +244,7 @@ cmap w!! w !sudo tee % >/dev/null
 
 " Toggle spell check
 nnoremap <silent> <leader>ss :setlocal spell!<cr>
+nnoremap <silent> <leader>sd z=<cr>
 
 " Disable highlight
 noremap <silent> <leader><cr> :noh<cr>
@@ -296,7 +253,7 @@ noremap <silent> <leader><cr> :noh<cr>
 nnoremap * *N
 
 " Easier word deletion in insert mode
-inoremap <C-backspace> <C-w>
+inoremap <C-BS> <C-w>
 
 " Remap VIM 0 to first non-blank character
 noremap 0 ^
@@ -307,6 +264,18 @@ nnoremap _$ :call Preserve("%s/\\s\\+$//e")<CR>
 " Fix indentation of entire file
 nnoremap _= :call Preserve("normal gg=G")<CR>
 
+" Cut, Copy, Paste
+vnoremap <C-x> "+d
+vnoremap <C-c> "+y
+nnoremap <C-v> "+p
+inoremap <C-v> "+p
+
+" Arrow keys navigate by visual lines
+noremap <Up> gk
+noremap <Down> gj
+
+" Enter key adds a line
+nnoremap <cr> o<esc>
 
 """""""""""""""""""""""""""
 "  Easy Edit Preferences  "
@@ -328,16 +297,12 @@ autocmd! bufwritepost .vimrc source $MYVIMRC
 """""""""""""""""""""""
 " TODO: Move these with other navigational things
 nnoremap <leader>de :Explore<cr>
-nnoremap <leader>dv :Vexplore<cr>
-nnoremap <leader>ds :Sexplore<cr>
-
-" Things to remember
 
 " Return to last edit position when opening files (You want this!)
 autocmd BufReadPost *
-     \ if line("'\"") > 0 && line("'\"") <= line("$") |
-     \   exe "normal! g`\"" |
-     \ endif
+            \ if line("'\"") > 0 && line("'\"") <= line("$") |
+            \   exe "normal! g`\"" |
+            \ endif
 " Remember info about open buffers on close
 set viminfo^=%
 
@@ -349,6 +314,3 @@ set viminfo^=%
 autocmd FileType make setlocal noexpandtab
 autocmd FileType ruby setlocal ts=2 sts=2 sw=2
 autocmd FileType haml setlocal ts=2 sts=2 sw=2
-
-" Fix nanoc's yaml frontmatter syntax highlighting
-autocmd BufNewFile,BufRead *.md syntax match Comment /\%^---\_.\{-}---$/
